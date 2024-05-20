@@ -11,7 +11,9 @@ contract Cursive is ERC721URIStorage, Ownable {
     bool public multipleItems;
 
     address public _verifierAddress;
-    string nftImageUri = "https://gold-open-stork-876.mypinata.cloud/ipfs/QmRX9K9sqBbTKGfzrKQopJ3pHSMgVonHxoqqPPrctqkw9H/cursive.png";
+    
+    // NFT metadata URI
+    string _tokenURI = "https://gold-open-stork-876.mypinata.cloud/ipfs/QmacPegHtWhhb79KBFMD2kJoZSCsZF4WhDA8BPkT4i5vY6";
 
     mapping(address => bool) public hasClaimed; // mapping to keep track of users who have claimed the NFT
 
@@ -31,7 +33,6 @@ contract Cursive is ERC721URIStorage, Ownable {
     // Minting is possible only if the proof is valid
     function verifyAndMint(
         address userAddress,
-        string memory _tokenURI,
         VerifierParams calldata data
     ) public {
         bool isValidProof = IVerifier(_verifierAddress).verifyProof(
@@ -41,13 +42,12 @@ contract Cursive is ERC721URIStorage, Ownable {
             data._pubSignals
         );
         require(isValidProof, "Proof is not valid");
-        mint(userAddress, _tokenURI);
+        _mint(userAddress);
     }
 
     // Private function to mint an NFT
-    function mint(
-        address _recipient,
-        string memory _tokenURI
+    function _mint(
+        address _recipient
     ) private returns (bool)  {
         if (!multipleItems) {
             require(!hasClaimed[_recipient], "User has already claimed the NFT");
